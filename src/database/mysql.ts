@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import mysql from "mysql2/promise";
+import mysql, { RowDataPacket } from "mysql2/promise";
 import { Signale } from "signale";
 
 dotenv.config();
@@ -16,15 +16,15 @@ const config = {
 
 const pool = mysql.createPool(config);
 
-export async function query(sql: string, params: any[]) {
+export async function query(sql: string, params: any[]): Promise<RowDataPacket[]> {
   try {
     const conn = await pool.getConnection();
     signale.success("Conexión exitosa a la BD");
-    const [rows] = await conn.execute(sql, params);
+    const [rows] = await conn.execute<RowDataPacket[]>(sql, params);
     conn.release();
     return rows;
   } catch (error) {
     signale.error(error);
-    return null;
+    throw error;
   }
 }
