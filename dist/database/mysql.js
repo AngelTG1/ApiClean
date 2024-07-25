@@ -38,7 +38,7 @@ function query(sql, params) {
         }
         catch (error) {
             signale.error(error);
-            return null;
+            throw error;
         }
     });
 }

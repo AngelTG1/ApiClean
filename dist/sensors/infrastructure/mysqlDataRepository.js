@@ -9,45 +9,40 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MysqlUserRepository = void 0;
-const user_1 = require("../domain/user");
-const mysql_1 = require("../../database/mysql"); // Asegúrate de que la ruta es correcta
-class MysqlUserRepository {
-    addUser(name, email, password) {
+exports.MysqlDataRepository = void 0;
+const data_1 = require("../domain/data");
+const mysql_1 = require("../../database/mysql");
+class MysqlDataRepository {
+    addData(temperature, heart_rate, spo2) {
         return __awaiter(this, void 0, void 0, function* () {
-            const sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
-            const params = [name, email, password];
+            const sql = "INSERT INTO data (temperature, heart_rate, spo2) VALUES (?, ?, ?)";
+            const params = [temperature, heart_rate, spo2];
             try {
                 const result = yield (0, mysql_1.query)(sql, params);
                 if (result) {
-                    const userId = result.insertId;
-                    return new user_1.User(userId, name, email, password);
+                    const dataId = result.insertId;
+                    return new data_1.Data(dataId, temperature, heart_rate, spo2);
                 }
                 return null;
             }
             catch (error) {
-                console.error("Error in addUser:", error);
+                console.error("Error in addData:", error);
                 return null;
             }
         });
     }
-    findByEmail(email) {
+    getData() {
         return __awaiter(this, void 0, void 0, function* () {
-            const sql = "SELECT * FROM users WHERE email = ?";
-            const params = [email];
+            const sql = "SELECT * FROM data";
             try {
-                const result = yield (0, mysql_1.query)(sql, params);
-                if (result.length > 0) {
-                    const { id, name, email, password } = result[0];
-                    return new user_1.User(id, name, email, password);
-                }
-                return null;
+                const result = yield (0, mysql_1.query)(sql, []);
+                return result.map(row => new data_1.Data(row.id, row.temperature, row.heart_rate, row.spo2));
             }
             catch (error) {
-                console.error("Error in findByEmail:", error);
-                return null;
+                console.error("Error in getData:", error);
+                return [];
             }
         });
     }
 }
-exports.MysqlUserRepository = MysqlUserRepository;
+exports.MysqlDataRepository = MysqlDataRepository;

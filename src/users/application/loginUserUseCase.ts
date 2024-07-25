@@ -14,6 +14,7 @@ export class LoginUserUseCase {
       const user = await this.userRepository.findByEmail(email);
       if (user && await this.encryptService.comparePassword(password, user.password)) {
         const token = this.jwtService.generateToken({ id: user.id, email: user.email, name: user.name });
+        console.log("Generated Token:", token); // Verifica que el token se genera
         return token;
       }
       return null;
